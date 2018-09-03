@@ -7,6 +7,7 @@
 
 import json
 from scrapy.exceptions import DropItem
+from scrapy.spider import Spider
 
 class ProductPipeline(object):
 
@@ -23,12 +24,12 @@ class ProductPipeline(object):
         self.file.close()
 
     def process_item(self, item, spider):
-        if 'title' not in item.fields:
-            raise DropItem('Invalid Item! title field not found')
-        if item['title'] in self.titles_seen:
-            raise DropItem('Duplicate Item found')
-        else:
-            self.titles_seen.add(item['title'])
+        try:
+            if item['title'] in self.titles_seen:
+                raise DropItem('Duplicate Item found')
+        except:
+            raise  DropItem('Invalid Item')
+        self.titles_seen.add(item['title'])
         line = json.dumps(dict(item)) + ',\n'
         self.file.write(line)
         return item

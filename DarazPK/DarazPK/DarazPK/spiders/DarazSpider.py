@@ -9,8 +9,12 @@ class DarazSpider(CrawlSpider):
     start_urls = ['https://www.daraz.pk/']
 
     rules = (
-        Rule(LinkExtractor(allow=(), deny=('[.]html$', '/ur/'), allow_domains=('daraz.pk'))),
-        Rule(LinkExtractor(allow=('[.]html$'), deny=('/ur/'), allow_domains=('daraz.pk')), callback='parse_item'),
+        Rule(LinkExtractor(allow=('https://www.daraz.pk/.*',), deny=('[.]html$', '/ur/'), allow_domains=('daraz.pk'),
+                           restrict_css=('ul.menu-items', 'div.page-sub-category col-sm-2 hidden-sm hidden-xs',
+                                         'section.products'),
+                           restrict_xpaths=('ul[@class="osh-pagination -horizontal"]'))),
+        Rule(LinkExtractor(allow=('[.]html$'), deny=('/ur/'), allow_domains=('daraz.pk')),
+             callback='parse_item'),
     )
 
     def __init__(self, start_urls=None, allowed_domains=None, *args, **kwargs):
